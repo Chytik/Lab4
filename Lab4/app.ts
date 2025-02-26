@@ -75,7 +75,33 @@ export namespace Transport {
         }
     }
 
-    export class VehicleStorageImpl<T extends Vehicle> {
+    
+    export interface VehicleStorage<T extends Vehicle> {
+        addVehicle(vehicle: T): void;
+        getAllVehicles(): T[];
+        sortByMake(): T[]; 
+    }
+    export class VehicleStorageImpl<T extends Vehicle> implements VehicleStorage<T> {
+        private vehicles: T[] = [];
+
+
+        addVehicle(vehicle: T): void {
+            this.vehicles.push(vehicle);
+        }
+
+        getAllVehicles(): T[] {
+            return this.vehicles;
+        }
+
+        sortByMake(): T[] {
+            return this.vehicles.sort((a, b) => {
+                if (a.make < b.make) return -1; 
+                if (a.make > b.make) return 1;
+                return 0;
+            });
+        }
+    }
+    export class VehicleStorageImpl<T extends Vehicle> implements VehicleStorage<T> {
         private vehicles: T[] = [];
 
         addVehicle(vehicle: T): void {
@@ -84,6 +110,10 @@ export namespace Transport {
 
         getAllVehicles(): T[] {
             return this.vehicles;
+        }
+
+        sortByMake(): T[] {
+            return this.vehicles.sort((a, b) => a.make.localeCompare(b.make));
         }
     }
 }
@@ -128,6 +158,13 @@ const owner1 = new Transport.Owner("Иванов", "Иван", "Иванович", new Date(1985, 
 const car = new CarImpl("Toyota", "Camry", 2020, "1HGBH41JXMN109186", "A123BC", owner1, Transport.BodyType.SEDAN, Transport.CarClass.PREMIUM);
 
 console.log(car.displayInfo()); 
+const vehicles: Transport.Vehicle[] = [
+    new Transport.CarImpl("Toyota", "Camry", 2020, "1HGBH41JXMN109186", "A123BC", owner1, Transport.BodyType.SEDAN, Transport.CarClass.PREMIUM),
+    new Transport.CarImpl("Honda", "Civic", 2019, "2HGBH41JXMN109187", "B456CD", owner2, Transport.BodyType.HATCHBACK, Transport.CarClass.STANDARD)
+];
+
+const sortedVehicles = vehicles.sort((a, b) => a.make.localeCompare(b.make));
+
 
 
  
