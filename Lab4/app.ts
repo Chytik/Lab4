@@ -87,3 +87,47 @@ export namespace Transport {
         }
     }
 }
+
+function freezePrototype(constructor: Function) {
+    Object.freeze(constructor);
+    Object.freeze(constructor.prototype);
+}
+
+function uppercaseMethod(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+    const originalMethod = descriptor.value;
+    descriptor.value = function (...args: any[]) {
+        const result = originalMethod.apply(this, args);
+        if (typeof result === 'string') {
+            return result.toUpperCase();
+        }
+        return result;
+    };
+    return descriptor;
+}
+
+@freezePrototype
+class CarImpl implements Transport.Car {
+    constructor(
+        public make: string,
+        public model: string,
+        public year: number,
+        public vin: string,
+        public licensePlate: string,
+        public owner: Transport.Owner,
+        public bodyType: Transport.BodyType,
+        public carClass: Transport.CarClass
+    ) { }
+
+    uppercaseMethod
+    displayInfo(): string {
+        return `Car: ${this.make} ${this.model}, Year: ${this.year}, VIN: ${this.vin}, License Plate: ${this.licensePlate}, Owner: ${this.owner.lastName}, Body Type: ${this.bodyType}, Class: ${this.carClass}`;
+    }
+}
+
+const owner1 = new Transport.Owner("Иванов", "Иван", "Иванович", new Date(1985, 5, 15), Transport.OwnerDocumentType.PASSPORT, "1234", "567890");
+const car = new CarImpl("Toyota", "Camry", 2020, "1HGBH41JXMN109186", "A123BC", owner1, Transport.BodyType.SEDAN, Transport.CarClass.PREMIUM);
+
+console.log(car.displayInfo()); 
+
+
+ 
